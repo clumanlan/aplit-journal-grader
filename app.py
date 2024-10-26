@@ -6,7 +6,7 @@ from haystack.components.generators import OpenAIGenerator
 OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']
 gpt4_client = OpenAIGenerator(model="gpt-4o")
 
-st.title("Journal Response Grader")
+st.title("Frate Train Journal Response Grader")
 
 prompt = st.text_area("Paste the prompt here:")
 main_claim = st.text_area("Main Claim", placeholder="Enter your main claim here...")
