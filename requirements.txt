@@ -1,2 +1,2 @@
-django_haystack==3.3.0
+haystack-ai==2.6.1
 streamlit==1.39.0
