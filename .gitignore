@@ -1,5 +1,6 @@
 # streamlit secrets
 .streamlit/
+student_name_list.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

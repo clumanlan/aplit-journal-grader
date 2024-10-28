@@ -1,2 +1,4 @@
 haystack-ai==2.6.1
 streamlit==1.39.0
+boto3==1.16.0
+pandas==2.2.3
