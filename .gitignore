@@ -1,7 +1,7 @@
 # streamlit secrets
 .streamlit/
 student_name_list.py
-
+.aplit_journal_grader_venv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
