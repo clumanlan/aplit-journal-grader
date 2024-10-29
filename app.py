@@ -205,9 +205,9 @@ if st.button("Submit"):
             evidence_prompt = f"""
                 You are an advanced literature highschool teacher,  the student has made this claim: {main_claim}.
                 To support this claim the student provides two pieces of evidence. 
-                One piece of evidence is: {evidence_one}.
+                The first piece of evidence is: {evidence_one}.
                 The second piece of evidence: {evidence_two}.
-                The focus of this critique should be primarily the second piece of evidence however please take into account both pieces of evidence.
+                Please be sure to directly label what number piece evidence you're referring to.
                 Please provide a grade and concise critique in bulleted notes based on this rubric: {evidence_score_rubric}.
                 Please provide it in the format: 
                     Score: 
