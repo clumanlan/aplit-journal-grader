@@ -54,7 +54,7 @@ with col2:
     st.subheader("Frate Train Journal Response Grader")
 
 student_names = get_student_names()
-student_name = st.selectbox('Please start typing to select name...', ['', *student_names])
+student_name = st.selectbox('Please start typing to select name...', ['', 'test', *student_names])
 
 prompt = st.text_area("Paste the prompt here:")
 
@@ -91,6 +91,8 @@ if st.button("Submit"):
         st.error(f"Please fill out the following fields: {', '.join(missing_fields).replace('_', ' ').capitalize()}")
     else:
         st.success("Journal submitted successfully! Ms Frate says: 'Great Job, Scholar! 'Processing.....")
+        
+        gpt4_client = OpenAIGenerator(model="gpt-4o")
 
         def log_student_submission(student_name, journal_entry_option):
 
@@ -110,7 +112,6 @@ if st.button("Submit"):
                 }
             )
 
-        gpt4_client = OpenAIGenerator(model="gpt-4o")
 
         def main_claim_critique(prompt, main_claim):
                 
@@ -138,7 +139,10 @@ if st.button("Submit"):
                 main_claim_prompt = f"""
                     As if you are an advanced literature highschool teacher, you provide student this prompt: {prompt}.
                     The student, in return, provides this thesis claim in response: {main_claim}.
-                    Please provide a grade and concise critique in bulleted notes based on this rubric: {main_claim_score_rubric}.
+                    Please provide a score and concise critique in bulleted notes based on this rubric: {main_claim_score_rubric}.
+                    Please provide it in the format: 
+                        Score: 
+                        Critique: 
                     """
                 
                 return gpt4_client.run(main_claim_prompt)['replies'][0]
@@ -167,8 +171,47 @@ if st.button("Submit"):
 
             evidence_prompt = f"""
                 You are an advanced literature highschool teacher,  the student has made this claim: {main_claim}.
-                To support this claim the student has provided this evidence: {evidence}.
+                To support this claim the student provides two pieces of evidence one piece of the evidence is: {evidence}.
                 Please provide a grade and concise critique in bulleted notes based on this rubric: {evidence_score_rubric}.
+                Please provide it in the format: 
+                    Score: 
+                    Critique: 
+                """
+
+            return gpt4_client.run(evidence_prompt)['replies'][0]
+
+
+        def two_evidence_critique(main_claim, evidence_one, evidence_two):
+            
+            evidence_score_rubric = """
+                Score of 4: You have a direct quote (or a specific paraphrase if the situation is appropriate),
+                The direct quote fully supports your claim, and 
+                Your direct quote has the context needed to understand it.
+
+                Score of 3: No context, or not enough information is given to make the context clear,
+                OR
+                Too long, making it difficult to identify which parts are significant.
+
+                Score of 2: Paraphrased when a direct quote would be more appropriate,
+                OR
+                Tangential to the claim (related to the claim but does not directly prove it).
+
+                Score of 1: Evidence is entirely unrelated to the claim,
+                OR
+                Evidence is paraphrased poorly, thus too confusing to contribute to the argument.
+                """
+
+
+            evidence_prompt = f"""
+                You are an advanced literature highschool teacher,  the student has made this claim: {main_claim}.
+                To support this claim the student provides two pieces of evidence. 
+                One piece of evidence is: {evidence_one}.
+                The second piece of evidence: {evidence_two}.
+                The focus of this critique should be primarily the second piece of evidence however please take into account both pieces of evidence.
+                Please provide a grade and concise critique in bulleted notes based on this rubric: {evidence_score_rubric}.
+                Please provide it in the format: 
+                    Score: 
+                    Critique: 
                 """
 
             return gpt4_client.run(evidence_prompt)['replies'][0]
@@ -204,6 +247,10 @@ if st.button("Submit"):
                 You are an advanced literature highschool teacher, the student has provided this evidence: {evidence}.
                 The student's main thesis: {main_claim}. To prove their thesis the student has provided this reasoning: {reasoning}.
                 Please provide a grade and concise critique in bulleted notes based on this rubric: {reasoning_score_rubric}.
+                Please provide it in the format: 
+                    Score: 
+                    Critique: 
+                
                 """
             
             return gpt4_client.run(reasoning_prompt)['replies'][0]
@@ -231,7 +278,12 @@ if st.button("Submit"):
                 The student, in return, provides this thesis claim in response: {main_claim} and this evidence:
                 {evidence_one} and reasoning: {reasoning_one}.
                 Along with this evidence: {evidence_two} and reasoning: {reasoning_two}
-                Please provide a grade and concise critique of the {conculsion_statement} based on this rubric: {synthesis_score_rubric}.
+                Please provide a grade and concise critique 
+                
+                in bulleted notes  of the {conculsion_statement} based on this rubric: {synthesis_score_rubric}.
+                Please provide it in the format: 
+                    Score: 
+                    Critique: 
                 """
 
             return gpt4_client.run(synthesis_prompt)['replies'][0]
@@ -250,7 +302,8 @@ if st.button("Submit"):
                 evidence_one = journal_sections_submitted['evidence_one']
                 journal_sections_critiques['reasoning_one'] = reasoning_critique(main_claim, evidence_one, value)
             elif key == 'evidence_two':
-                journal_sections_critiques['evidence_two'] = evidence_critique(main_claim, value)
+                evidence_one = journal_sections_submitted['evidence_one']
+                journal_sections_critiques['evidence_two'] = two_evidence_critique(main_claim, evidence_one, value)
             elif key == 'reasoning_two':
                 evidence_two = journal_sections_submitted['evidence_two']
                 journal_sections_critiques['reasoning_two'] = reasoning_critique(main_claim, evidence_two, value)
